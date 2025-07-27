@@ -3,16 +3,17 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:habitoapp/auth/authFirebase.dart';
 import 'package:habitoapp/controllers/loginController.dart';
-import 'package:habitoapp/views/cadastroUser.dart';
-import 'package:habitoapp/views/recuparSenhaUser.dart';
+import 'package:habitoapp/views/autenticacaoUser.dart';
 import 'package:habitoapp/widgets/custom_button.dart';
 import 'package:habitoapp/widgets/custom_textfield.dart';
 
-class AutenticacaoUser extends StatelessWidget {
+class CadastroUser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var usuarioController = TextEditingController();
+    var usuarioControllerConfirm = TextEditingController();
     var senhaController = TextEditingController();
+    var senhaControllerConfirm = TextEditingController();
     final LoginController _controller = LoginController(AutenticacaoFirebase());
 
     return Scaffold(
@@ -23,7 +24,7 @@ class AutenticacaoUser extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 150),
+                const SizedBox(height: 50),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -45,7 +46,6 @@ class AutenticacaoUser extends StatelessWidget {
                 ),
                 const SizedBox(height: 40),
                 Container(
-                  width: 360,
                   padding: const EdgeInsets.all(25),
                   decoration: BoxDecoration(
                       color: Colors.white,
@@ -62,7 +62,7 @@ class AutenticacaoUser extends StatelessWidget {
                       const Align(
                         alignment: Alignment.centerLeft,
                         child: const Text(
-                          'Login',
+                          'Cadastro',
                           style: TextStyle(
                               fontSize: 36, fontWeight: FontWeight.bold),
                         ),
@@ -76,6 +76,13 @@ class AutenticacaoUser extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
                       CustomTextField(
+                        controller: usuarioControllerConfirm,
+                        hintText: 'Confirme seu Email',
+                        icon: Icons.email_outlined,
+                        obscureText: false,
+                      ),
+                      const SizedBox(height: 20),
+                      CustomTextField(
                           controller: senhaController,
                           hintText: 'Senha',
                           icon: Icons.lock_outline,
@@ -83,56 +90,52 @@ class AutenticacaoUser extends StatelessWidget {
                       const SizedBox(
                         height: 20,
                       ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => RecuparSenhaUser()),
-                            );
-                          },
-                          child: const Text(
-                            'Esqueceu sua senha?',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ),
+                      CustomTextField(
+                          controller: senhaControllerConfirm,
+                          hintText: 'Confirme sua senha',
+                          icon: Icons.lock_outline,
+                          obscureText: true),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      const SizedBox(
+                        height: 16,
                       ),
                       CustomButton(
-                        text: 'Login',
+                        text: 'Cadastrar',
                         onPressed: () async {
-                          await _controller.fazerLogin(usuarioController.text,
-                              senhaController.text, context);
+                          if (usuarioController.text ==
+                                  usuarioControllerConfirm.text &&
+                              senhaController.text ==
+                                  senhaControllerConfirm.text) {
+                            await _controller.registarUsuario(
+                                usuarioController.text,
+                                senhaController.text,
+                                context);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content:
+                                      Text('Email e senha não coincidem!')),
+                            );
+                          }
                         },
                       ),
-                      const SizedBox(height: 50),
-                      const Text(
-                        "Não tenho uma conta?",
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.normal,
-                            color: Colors.black),
-                      ),
+                      const SizedBox(height: 40),
                       TextButton(
                         onPressed: () async {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => CadastroUser()),
+                                builder: (context) => AutenticacaoUser()),
                           );
                         },
                         child: const Text(
-                          'Criar Conta',
+                          "Já tenho uma conta",
                           style: TextStyle(
-                            fontSize: 20,
-                            color: Color(0xFF3A5BFF),
-                            fontWeight: FontWeight.w600,
-                          ),
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF3A5BFF)),
                         ),
                       ),
                     ],

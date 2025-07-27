@@ -3,16 +3,15 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:habitoapp/auth/authFirebase.dart';
 import 'package:habitoapp/controllers/loginController.dart';
+import 'package:habitoapp/views/autenticacaoUser.dart';
 import 'package:habitoapp/views/cadastroUser.dart';
-import 'package:habitoapp/views/recuparSenhaUser.dart';
 import 'package:habitoapp/widgets/custom_button.dart';
 import 'package:habitoapp/widgets/custom_textfield.dart';
 
-class AutenticacaoUser extends StatelessWidget {
+class RecuparSenhaUser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var usuarioController = TextEditingController();
-    var senhaController = TextEditingController();
     final LoginController _controller = LoginController(AutenticacaoFirebase());
 
     return Scaffold(
@@ -23,7 +22,7 @@ class AutenticacaoUser extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 150),
+                const SizedBox(height: 80),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -45,7 +44,6 @@ class AutenticacaoUser extends StatelessWidget {
                 ),
                 const SizedBox(height: 40),
                 Container(
-                  width: 360,
                   padding: const EdgeInsets.all(25),
                   decoration: BoxDecoration(
                       color: Colors.white,
@@ -62,9 +60,9 @@ class AutenticacaoUser extends StatelessWidget {
                       const Align(
                         alignment: Alignment.centerLeft,
                         child: const Text(
-                          'Login',
+                          'Informe seu email de cadastro',
                           style: TextStyle(
-                              fontSize: 36, fontWeight: FontWeight.bold),
+                              fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -75,59 +73,27 @@ class AutenticacaoUser extends StatelessWidget {
                         obscureText: false,
                       ),
                       const SizedBox(height: 20),
-                      CustomTextField(
-                          controller: senhaController,
-                          hintText: 'Senha',
-                          icon: Icons.lock_outline,
-                          obscureText: true),
                       const SizedBox(
                         height: 20,
                       ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => RecuparSenhaUser()),
-                            );
-                          },
-                          child: const Text(
-                            'Esqueceu sua senha?',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ),
-                      ),
                       CustomButton(
-                        text: 'Login',
+                        text: 'Enviar Email',
                         onPressed: () async {
-                          await _controller.fazerLogin(usuarioController.text,
-                              senhaController.text, context);
+                          await _controller.recuparSenha(
+                              context, usuarioController.text);
                         },
                       ),
-                      const SizedBox(height: 50),
-                      const Text(
-                        "Não tenho uma conta?",
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.normal,
-                            color: Colors.black),
-                      ),
+                      const SizedBox(height: 40),
                       TextButton(
                         onPressed: () async {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => CadastroUser()),
+                                builder: (context) => AutenticacaoUser()),
                           );
                         },
                         child: const Text(
-                          'Criar Conta',
+                          'Voltar pra login',
                           style: TextStyle(
                             fontSize: 20,
                             color: Color(0xFF3A5BFF),
