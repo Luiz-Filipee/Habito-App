@@ -1,10 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:habitoapp/auth/authFirebase.dart';
 import 'package:habitoapp/controllers/loginController.dart';
 import 'package:habitoapp/views/autenticacaoUser.dart';
-import 'package:habitoapp/views/cadastroUser.dart';
 import 'package:habitoapp/widgets/custom_button.dart';
 import 'package:habitoapp/widgets/custom_textfield.dart';
 

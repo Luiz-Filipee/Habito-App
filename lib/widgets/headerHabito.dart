@@ -1,6 +1,6 @@
 // header_habits.dart
 import 'package:flutter/material.dart';
-import 'package:habitoapp/views/cadastroUser.dart';
+import 'package:habitoapp/views/cadastroHabito.dart';
 
 class HeaderHabitos extends StatelessWidget {
   const HeaderHabitos({super.key});
@@ -23,7 +23,7 @@ class HeaderHabitos extends StatelessWidget {
           onPressed: () async {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => CadastroUser()),
+              MaterialPageRoute(builder: (context) => NovoHabitoPage()),
             );
           },
           child: const Icon(Icons.add),

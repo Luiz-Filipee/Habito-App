@@ -1,8 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:habitoapp/auth/authFirebase.dart';
 
 class LoginController {
   final AutenticacaoFirebase _auth;
+  final FirebaseAuth _authUser = FirebaseAuth.instance;
 
   LoginController(this._auth);
 
@@ -61,6 +63,10 @@ class LoginController {
         SnackBar(content: Text(resultado)),
       );
     }
+  }
+
+  Future<String?> getUserSession(BuildContext context) async {
+    return _authUser.currentUser?.uid;
   }
 
   Future<void> verificarUsuarioLogado(BuildContext context) async {

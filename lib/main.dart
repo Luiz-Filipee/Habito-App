@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:habitoapp/firebase_options.dart';
 import 'package:habitoapp/utils/firebase_config.dart';
 import 'package:habitoapp/views/autenticacaoUser.dart';
+import 'package:habitoapp/views/cadastroHabito.dart';
 import 'package:habitoapp/views/cadastroUser.dart';
 import 'package:habitoapp/views/listaHabitos.dart';
 import 'package:habitoapp/views/recuparSenhaUser.dart';
@@ -28,7 +29,8 @@ class MyApp extends StatelessWidget {
         '/auth': (context) => AutenticacaoUser(),
         '/cadastro-user': (context) => CadastroUser(),
         '/recuper-senha-user': (context) => RecuparSenhaUser(),
-        '/lista-habitos': (context) => ListaHabitos()
+        '/lista-habitos': (context) => ListaHabitos(),
+        '/cadastro-habito': (context) => NovoHabitoPage()
       },
     );
   }

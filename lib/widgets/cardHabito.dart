@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 class CardHabito extends StatelessWidget {
   final String nome;
   final int progresso;
+  final String lembrete;
   final Color color;
 
   const CardHabito({
     super.key,
     required this.nome,
     required this.progresso,
+    required this.lembrete,
     required this.color,
   });
 
@@ -24,8 +26,8 @@ class CardHabito extends StatelessWidget {
         boxShadow: const [
           BoxShadow(
             color: Colors.black12,
-            blurRadius: 8,
-            offset: Offset(0, 4),
+            blurRadius: 20,
+            offset: Offset(0, 6),
           ),
         ],
       ),
@@ -35,8 +37,8 @@ class CardHabito extends StatelessWidget {
           Text(
             nome,
             style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontSize: 30,
+              fontWeight: FontWeight.normal,
             ),
           ),
           const SizedBox(height: 12),
@@ -52,7 +54,7 @@ class CardHabito extends StatelessWidget {
               FractionallySizedBox(
                 widthFactor: progresso / 7,
                 child: Container(
-                  height: 20,
+                  height: 45,
                   decoration: BoxDecoration(
                     color: color,
                     borderRadius: BorderRadius.circular(10),
