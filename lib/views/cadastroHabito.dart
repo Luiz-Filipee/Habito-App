@@ -27,6 +27,7 @@ class _NovoHabitoPageState extends State<NovoHabitoPage> {
   String _tituloPagina = 'Novo Hábito';
   String _textoBotao = 'Criar Hábito';
 
+  final Color activeColor = Color(0xFFFF6B6B);
   final Color primaryColor = Color(0xFFFF6B6B);
   final Color backgroundColor = Color(0xFFFDF6F0);
   final Color textColor = Color(0xFFFF6B6B);
@@ -82,48 +83,29 @@ class _NovoHabitoPageState extends State<NovoHabitoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundColor,
+      appBar: AppBar(
+        backgroundColor: activeColor,
+        elevation: 4,
+        centerTitle: true,
+        title: Text(
+          _tituloPagina,
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 22,
+            letterSpacing: 1.2,
+          ),
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 5),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    _tituloPagina,
-                    style: TextStyle(
-                      fontSize: 40,
-                      fontWeight: FontWeight.bold,
-                      color: textColor,
-                    ),
-                  ),
-                  if (!_modoEdicao) ...[
-                    const SizedBox(width: 10),
-                    Text(
-                      '+',
-                      style: TextStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold,
-                        color: primaryColor,
-                      ),
-                    ),
-                  ]
-                ],
-              ),
-            ),
-            const SizedBox(height: 10),
             Expanded(
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(28),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(32),
-                    topRight: Radius.circular(32),
-                  ),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black12,
