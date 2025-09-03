@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:habitoapp/firebase_options.dart';
-import 'package:habitoapp/utils/firebase_config.dart';
 import 'package:habitoapp/views/autenticacaoUser.dart';
 import 'package:habitoapp/views/cadastroHabito.dart';
 import 'package:habitoapp/views/cadastroUser.dart';

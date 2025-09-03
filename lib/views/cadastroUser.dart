@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:habitoapp/auth/authFirebase.dart';
 import 'package:habitoapp/controllers/loginController.dart';
@@ -15,16 +13,17 @@ class CadastroUser extends StatelessWidget {
     var senhaController = TextEditingController();
     var senhaControllerConfirm = TextEditingController();
     final LoginController _controller = LoginController(AutenticacaoFirebase());
+    final Color primaryColor = Color(0xFFFF6B6B);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F1ED),
       body: Center(
         child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 50),
+                const SizedBox(height: 80),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -40,7 +39,7 @@ class CadastroUser extends StatelessWidget {
                       style: TextStyle(
                           fontSize: 50,
                           fontWeight: FontWeight.bold,
-                          color: Colors.green),
+                          color: Color(0xFFFF6B6B)),
                     )
                   ],
                 ),
@@ -103,6 +102,8 @@ class CadastroUser extends StatelessWidget {
                       ),
                       CustomButton(
                         text: 'Cadastrar',
+                        backgroundColor: primaryColor,
+                        textColor: Colors.white,
                         onPressed: () async {
                           if (usuarioController.text ==
                                   usuarioControllerConfirm.text &&
@@ -135,7 +136,7 @@ class CadastroUser extends StatelessWidget {
                           style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w600,
-                              color: Color(0xFF3A5BFF)),
+                              color: Color(0xFFFF6B6B)),
                         ),
                       ),
                     ],

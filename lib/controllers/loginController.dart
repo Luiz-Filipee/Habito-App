@@ -57,7 +57,7 @@ class LoginController {
     String resultado = await _auth.signOut();
 
     if (resultado.contains("Usuário desconectado")) {
-      Navigator.pushReplacementNamed(context, '/login');
+      Navigator.pushReplacementNamed(context, '/auth');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(resultado)),

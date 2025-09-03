@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:habitoapp/auth/authFirebase.dart';
 import 'package:habitoapp/controllers/habitoController.dart';
@@ -19,7 +17,47 @@ class _NovoHabitoPageState extends State<NovoHabitoPage> {
   final TextEditingController _lembreteController = TextEditingController();
   final _controller = HabitController();
   final _controllerUser = LoginController(AutenticacaoFirebase());
+
   String _frequencia = 'Diário';
+  String _categoria = 'Corrida';
+  int _progresso = 0;
+
+  bool _modoEdicao = false;
+  String? _habitoId;
+  String _tituloPagina = 'Novo Hábito';
+  String _textoBotao = 'Criar Hábito';
+
+  final Color primaryColor = Color(0xFFFF6B6B);
+  final Color backgroundColor = Color(0xFFFDF6F0);
+  final Color textColor = Color(0xFFFF6B6B);
+  final categorias = ['Corrida', 'Leitura', 'Trabalho'];
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+
+    if (args != null) {
+      _modoEdicao = true;
+      _habitoId = args['habitoId'];
+      _nomeController.text = args['nome'] ?? '';
+      _lembreteController.text = args['lembrete'] ?? '';
+      _frequencia = args['frequencia'] ?? 'Diário';
+
+      String cat = (args['categoria'] ?? 'Corrida').trim();
+      if (categorias.any((c) => c.toLowerCase() == cat.toLowerCase())) {
+        _categoria =
+            categorias.firstWhere((c) => c.toLowerCase() == cat.toLowerCase());
+      } else {
+        _categoria = 'Corrida';
+      }
+
+      _progresso = args['progresso'] ?? 0;
+      _tituloPagina = 'Editar Hábito';
+      _textoBotao = 'Salvar Alterações';
+    }
+  }
 
   Future<void> _selecionarHorario() async {
     TimeOfDay? horaSelecionada = await showTimePicker(
@@ -43,77 +81,71 @@ class _NovoHabitoPageState extends State<NovoHabitoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F1ED),
+      backgroundColor: backgroundColor,
       body: SafeArea(
         child: Column(
           children: [
-            const SizedBox(
-              height: 90,
-            ),
+            const SizedBox(height: 5),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
-                children: const [
+                children: [
                   Text(
-                    'Novo Hábito',
+                    _tituloPagina,
                     style: TextStyle(
                       fontSize: 40,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: textColor,
                     ),
                   ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    '+',
-                    style: TextStyle(
-                      fontSize: 40,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green,
+                  if (!_modoEdicao) ...[
+                    const SizedBox(width: 10),
+                    Text(
+                      '+',
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                        color: primaryColor,
+                      ),
                     ),
-                  ),
+                  ]
                 ],
               ),
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             Expanded(
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(25),
-                decoration: const BoxDecoration(
+                padding: const EdgeInsets.all(28),
+                decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(32),
                     topRight: Radius.circular(32),
                   ),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black12,
-                      blurRadius: 10,
-                      offset: Offset(0, -3),
+                      blurRadius: 18,
+                      offset: Offset(0, -6),
                     ),
                   ],
                 ),
                 child: SingleChildScrollView(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      const Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          'Nome',
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.w500,
-                          ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Nome',
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.w600,
+                          color: textColor,
                         ),
                       ),
+                      const SizedBox(height: 8),
                       CustomTextField(
                         controller: _nomeController,
                         hintText: 'Ex: Ler 5 livros',
@@ -121,32 +153,80 @@ class _NovoHabitoPageState extends State<NovoHabitoPage> {
                         obscureText: false,
                       ),
                       const SizedBox(height: 25),
-                      const Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          'Frequência',
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.w500,
-                          ),
+                      Text(
+                        'Categoria',
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.w600,
+                          color: textColor,
                         ),
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         height: 55,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: primaryColor, width: 1.8),
                           boxShadow: [
                             BoxShadow(
-                                color: const Color(0xF2EDE8E0),
-                                blurRadius: 0,
-                                offset: Offset(0, 2)),
+                              color: Colors.black12,
+                              blurRadius: 8,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: _categoria,
+                            isExpanded: true,
+                            style: TextStyle(fontSize: 18, color: Colors.black),
+                            items: ['Corrida', 'Leitura', 'Trabalho']
+                                .map((cat) => DropdownMenuItem(
+                                      value: cat,
+                                      child: Text(cat),
+                                    ))
+                                .toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                _categoria = value!;
+                              });
+                            },
+                            borderRadius: BorderRadius.circular(16),
+                            iconEnabledColor: primaryColor,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 25),
+                      Text(
+                        'Frequência',
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.w600,
+                          color: textColor,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        height: 55,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: primaryColor, width: 1.8),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 8,
+                              offset: Offset(0, 3),
+                            ),
                           ],
                         ),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
                             value: _frequencia,
                             isExpanded: true,
+                            style: TextStyle(fontSize: 18, color: Colors.black),
                             items: ['Diário', 'Semanal', 'Mensal']
                                 .map((freq) => DropdownMenuItem(
                                       value: freq,
@@ -159,20 +239,20 @@ class _NovoHabitoPageState extends State<NovoHabitoPage> {
                               });
                             },
                             borderRadius: BorderRadius.circular(16),
+                            iconEnabledColor: primaryColor,
                           ),
                         ),
                       ),
                       const SizedBox(height: 25),
-                      const Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          'Lembrete',
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.w500,
-                          ),
+                      Text(
+                        'Lembrete',
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.w600,
+                          color: textColor,
                         ),
                       ),
+                      const SizedBox(height: 8),
                       GestureDetector(
                         onTap: _selecionarHorario,
                         child: AbsorbPointer(
@@ -186,18 +266,36 @@ class _NovoHabitoPageState extends State<NovoHabitoPage> {
                       ),
                       const SizedBox(height: 45),
                       CustomButton(
-                        text: 'Criar Hábito',
+                        text: _textoBotao,
+                        backgroundColor: primaryColor,
+                        textColor: Colors.white,
                         onPressed: () async {
                           String? userId =
                               await _controllerUser.getUserSession(context);
-                          await _controller.cadastrarHabitoTeste(
-                            context,
-                            _nomeController.text,
-                            _lembreteController.text,
-                            0x7DD1EF,
-                            2,
-                            userId,
-                          );
+
+                          if (_modoEdicao && _habitoId != null) {
+                            await _controller.editarHabito(
+                              context,
+                              _habitoId!,
+                              _nomeController.text,
+                              _lembreteController.text,
+                              _frequencia,
+                              _categoria,
+                              0x7DD1EF,
+                              _progresso,
+                            );
+                          } else {
+                            await _controller.cadastrarHabitoTeste(
+                              context,
+                              _nomeController.text,
+                              _lembreteController.text,
+                              0x7DD1EF,
+                              _frequencia,
+                              _categoria,
+                              0,
+                              userId,
+                            );
+                          }
                         },
                       ),
                     ],

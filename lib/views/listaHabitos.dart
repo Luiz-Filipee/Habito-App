@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:habitoapp/auth/authFirebase.dart';
 import 'package:habitoapp/controllers/habitoController.dart';
+import 'package:habitoapp/controllers/loginController.dart';
 import 'package:habitoapp/widgets/cardHabito.dart';
-import 'package:habitoapp/widgets/headerHabito.dart';
 
 class ListaHabitos extends StatefulWidget {
   @override
@@ -10,7 +11,13 @@ class ListaHabitos extends StatefulWidget {
 
 class _ListaHabitosState extends State<ListaHabitos> {
   final HabitController _habitController = HabitController();
+  final LoginController _loginController =
+      LoginController(AutenticacaoFirebase());
   int _paginaAtual = 0;
+
+  final Color activeColor = Color(0xFFFF6B6B);
+  final Color inactiveColor = Colors.grey.shade400;
+  final Color scaffoldBgColor = Color(0xFFFDF6F0);
 
   void _navegar(int index) {
     setState(() {
@@ -29,14 +36,33 @@ class _ListaHabitosState extends State<ListaHabitos> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0XFFF5F1ED),
+      backgroundColor: scaffoldBgColor,
+      appBar: AppBar(
+        backgroundColor: activeColor,
+        elevation: 4,
+        centerTitle: true,
+        title: Text(
+          'Seus Hábitos',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 22,
+            letterSpacing: 1.2,
+          ),
+        ),
+        actions: [
+          IconButton(
+            tooltip: 'Sair',
+            icon: Icon(Icons.logout, color: Colors.white),
+            onPressed: () => _loginController.logout(context),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           child: Column(
             children: [
-              const HeaderHabitos(),
-              const SizedBox(height: 16),
               Expanded(
                 child: StreamBuilder(
                   stream: _habitController.listarHabitosUsuario(),
@@ -46,29 +72,87 @@ class _ListaHabitosState extends State<ListaHabitos> {
                     }
 
                     if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                      return const Center(
-                          child: Text('Nenhum hábito encontrado.'));
+                      return Center(
+                        child: Text(
+                          'Nenhum hábito encontrado.',
+                          style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 16,
+                          ),
+                        ),
+                      );
                     }
 
                     final habitos = snapshot.data!.docs;
 
                     return ListView.builder(
+                      physics: BouncingScrollPhysics(),
                       itemCount: habitos.length,
                       itemBuilder: (context, index) {
                         final habito =
                             habitos[index].data() as Map<String, dynamic>;
+                        final String habitoId = habitos[index].id;
                         final String nome = habito['nome'];
                         final int progresso = habito['progresso'];
                         final String lembrete = habito['lembrete'];
+                        final String frequencia = habito['frequencia'];
+                        final String categoria = habito['categoria'];
                         final int? corInt = habito['cor'];
                         final Color cor =
-                            corInt != null ? Color(corInt) : Colors.blueAccent;
+                            corInt != null ? Color(corInt) : activeColor;
 
                         return CardHabito(
-                            nome: nome,
-                            color: cor,
-                            progresso: progresso,
-                            lembrete: lembrete);
+                          habitoId: habitoId,
+                          nome: nome,
+                          color: cor,
+                          frequencia: frequencia,
+                          categoria: categoria,
+                          progresso: progresso,
+                          lembrete: lembrete,
+                          onTap: () {
+                            Navigator.pushNamed(context, '/cadastro-habito',
+                                arguments: {
+                                  'habitoId': habitoId,
+                                  'nome': nome,
+                                  'lembrete': lembrete,
+                                  'frequencia': frequencia,
+                                  'categoria': categoria,
+                                  'cor': corInt ?? activeColor.value,
+                                  'progress': progresso
+                                });
+                          },
+                          onLongPress: () {
+                            showDialog(
+                              context: context,
+                              builder: (_) => AlertDialog(
+                                title: Text('Excluir Hábito'),
+                                content: Text(
+                                    'Tem certeza que deseja excluir o hábito "$nome"?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: Text('Cancelar'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      _habitController.deletarHabito(
+                                          context, habitoId);
+                                    },
+                                    child: Text(
+                                      'Excluir',
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          onIncrement: () async {
+                            await _habitController.incrementarProgresso(
+                                context, habitoId);
+                          },
+                        );
                       },
                     );
                   },
@@ -80,54 +164,65 @@ class _ListaHabitosState extends State<ListaHabitos> {
       ),
       bottomNavigationBar: Container(
         height: 85,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(24), // canto superior esquerdo arredondado
-            topRight: Radius.circular(24), // canto superior direito arredondado
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
           ),
           boxShadow: [
             BoxShadow(
               color: Colors.black12,
-              blurRadius: 10,
-              offset: Offset(0, -2),
+              blurRadius: 12,
+              offset: Offset(0, -3),
             )
           ],
         ),
         child: Padding(
-          padding:
-              const EdgeInsets.only(top: 16, bottom: 12), // espaço vertical
+          padding: const EdgeInsets.only(top: 18, bottom: 16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               IconButton(
                 icon: Icon(
-                  Icons.home_outlined,
-                  size: 30,
-                  color: _paginaAtual == 0 ? Colors.blueAccent : Colors.grey,
+                  Icons.home_filled,
+                  size: 32,
+                  color: _paginaAtual == 0 ? activeColor : inactiveColor,
                 ),
                 onPressed: () => _navegar(0),
+                tooltip: 'Início',
               ),
               IconButton(
                 icon: Icon(
-                  Icons.check_circle_outline,
-                  size: 30,
-                  color: _paginaAtual == 1 ? Colors.blueAccent : Colors.grey,
+                  Icons.check_circle,
+                  size: 32,
+                  color: _paginaAtual == 1 ? activeColor : inactiveColor,
                 ),
                 onPressed: () => _navegar(1),
+                tooltip: 'Metas',
               ),
               IconButton(
                 icon: Icon(
-                  Icons.settings_outlined,
-                  size: 30,
-                  color: _paginaAtual == 2 ? Colors.blueAccent : Colors.grey,
+                  Icons.settings,
+                  size: 32,
+                  color: _paginaAtual == 2 ? activeColor : inactiveColor,
                 ),
                 onPressed: () => _navegar(2),
+                tooltip: 'Configurações',
               ),
             ],
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: activeColor,
+        foregroundColor: Colors.white,
+        child: Icon(Icons.add, size: 30),
+        onPressed: () {
+          Navigator.pushNamed(context, '/cadastro-habito');
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
