@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:habitoapp/auth/authFirebase.dart';
 import 'package:habitoapp/controllers/loginController.dart';
-import 'package:habitoapp/views/cadastroUser.dart';
-import 'package:habitoapp/views/recuparSenhaUser.dart';
+import 'package:habitoapp/views/autenticacaoUser.dart';
 import 'package:habitoapp/widgets/custom_button.dart';
 import 'package:habitoapp/widgets/custom_textfield.dart';
 
-class AutenticacaoUser extends StatefulWidget {
+class RecuparSenhaUser extends StatefulWidget {
   @override
-  _AutenticacaoUserState createState() => _AutenticacaoUserState();
+  _RecuperarSenhaUserState createState() => _RecuperarSenhaUserState();
 }
 
-class _AutenticacaoUserState extends State<AutenticacaoUser>
+class _RecuperarSenhaUserState extends State<RecuparSenhaUser>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
@@ -40,7 +39,6 @@ class _AutenticacaoUserState extends State<AutenticacaoUser>
   @override
   Widget build(BuildContext context) {
     var usuarioController = TextEditingController();
-    var senhaController = TextEditingController();
     final LoginController _controller = LoginController(AutenticacaoFirebase());
 
     final Color primaryColor = Color(0xFFFF6B6B);
@@ -55,7 +53,7 @@ class _AutenticacaoUserState extends State<AutenticacaoUser>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(height: 60),
+              const SizedBox(height: 140),
               ScaleTransition(
                 scale: _scaleAnimation,
                 child: Icon(
@@ -92,6 +90,7 @@ class _AutenticacaoUserState extends State<AutenticacaoUser>
               const SizedBox(height: 30),
               Container(
                 width: 380,
+                height: 450,
                 padding: const EdgeInsets.all(28),
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -108,9 +107,9 @@ class _AutenticacaoUserState extends State<AutenticacaoUser>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Login',
+                      'Informe seu email de cadastro',
                       style: TextStyle(
-                        fontSize: 38,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: textColor,
                       ),
@@ -123,65 +122,27 @@ class _AutenticacaoUserState extends State<AutenticacaoUser>
                       obscureText: false,
                     ),
                     const SizedBox(height: 24),
-                    CustomTextField(
-                      controller: senhaController,
-                      hintText: 'Senha',
-                      icon: Icons.lock_outline,
-                      obscureText: true,
-                    ),
-                    const SizedBox(height: 20),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => RecuparSenhaUser()),
-                          );
-                        },
-                        child: Text(
-                          'Esqueceu sua senha?',
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: primaryColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
                     CustomButton(
-                      text: 'Login',
+                      text: 'Enviar Email',
                       backgroundColor: primaryColor,
                       textColor: Colors.white,
                       onPressed: () async {
-                        await _controller.fazerLogin(usuarioController.text,
-                            senhaController.text, context);
+                        await _controller.recuparSenha(
+                            context, usuarioController.text);
                       },
                     ),
-                    const SizedBox(height: 50),
-                    Center(
-                      child: Text(
-                        "Não tenho uma conta?",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.normal,
-                          color: textColor,
-                        ),
-                      ),
-                    ),
+                    const SizedBox(height: 150),
                     Center(
                       child: TextButton(
                         onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => CadastroUser()),
+                                builder: (context) => AutenticacaoUser()),
                           );
                         },
                         child: Text(
-                          'Criar Conta',
+                          'Voltar para login',
                           style: TextStyle(
                             fontSize: 20,
                             color: primaryColor,

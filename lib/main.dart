@@ -1,8 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:habitoapp/firebase_options.dart';
-import 'package:habitoapp/utils/firebase_config.dart';
 import 'package:habitoapp/views/autenticacaoUser.dart';
+import 'package:habitoapp/views/cadastroHabito.dart';
+import 'package:habitoapp/views/cadastroUser.dart';
+import 'package:habitoapp/views/listaHabitos.dart';
+import 'package:habitoapp/views/recuparSenhaUser.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +24,13 @@ class MyApp extends StatelessWidget {
       title: '',
       theme: ThemeData(primarySwatch: Colors.blue),
       initialRoute: '/auth',
-      routes: {'/auth': (context) => AutenticacaoUser()},
+      routes: {
+        '/auth': (context) => AutenticacaoUser(),
+        '/cadastro-user': (context) => CadastroUser(),
+        '/recuper-senha-user': (context) => RecuparSenhaUser(),
+        '/lista-habitos': (context) => ListaHabitos(),
+        '/cadastro-habito': (context) => NovoHabitoPage()
+      },
     );
   }
 }

@@ -6,27 +6,51 @@ class CustomTextField extends StatelessWidget {
   final bool obscureText;
   final TextEditingController controller;
 
-  const CustomTextField(
-      {required this.hintText,
-      required this.icon,
-      required this.obscureText,
-      required this.controller});
+  const CustomTextField({
+    required this.hintText,
+    required this.icon,
+    required this.obscureText,
+    required this.controller,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      obscureText: obscureText,
-      decoration: InputDecoration(
-        prefixIcon: Icon(icon),
-        hintText: hintText,
-        filled: true,
-        fillColor: const Color(0xF2EDE8E0),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide.none,
+    final Color borderColor = const Color(0xFFFF6B6B);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 6,
+            offset: Offset(0, 3),
+          ),
+        ],
+        border: Border.all(color: borderColor, width: 2),
+      ),
+      child: TextField(
+        controller: controller,
+        obscureText: obscureText,
+        cursorColor: borderColor,
+        style: TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.w600,
+        ),
+        decoration: InputDecoration(
+          prefixIcon: Icon(icon, color: borderColor),
+          hintText: hintText,
+          hintStyle: Colors.black.withOpacity(0.6).toTextStyle(),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(vertical: 16),
         ),
       ),
     );
   }
+}
+
+extension on Color {
+  TextStyle toTextStyle() => TextStyle(color: this);
 }
