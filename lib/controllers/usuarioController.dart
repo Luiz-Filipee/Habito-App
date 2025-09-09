@@ -1,12 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:habitoapp/auth/authFirebase.dart';
 
-class LoginController {
+class UsuarioController {
   final AutenticacaoFirebase _auth;
   final FirebaseAuth _authUser = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  LoginController(this._auth);
+  UsuarioController(this._auth);
 
   Future<void> fazerLogin(
       String username, String senha, BuildContext context) async {
@@ -30,26 +32,54 @@ class LoginController {
     }
   }
 
-  Future<void> registarUsuario(
-      String username, String senha, BuildContext context) async {
-    if (username.isEmpty || senha.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Preencha todos os campos.')),
-      );
-      return;
+  Future<void> criarUsuarioSeNaoExistir(String userId) async {
+    final docRef = _firestore.collection('usuarios').doc(userId);
+
+    final snapshot = await docRef.get();
+
+    if (!snapshot.exists) {
+      await docRef.set({
+        'xp': 0,
+        'nivel': 1,
+        'medalhas': [],
+      });
+    } else {
+      return null;
     }
+  }
 
-    String resultado = await _auth.registerWithEmailPassword(username, senha);
+  Future<User?> registarUsuario(
+      String email, String senha, BuildContext context) async {
+    try {
+      UserCredential cred = await _authUser.createUserWithEmailAndPassword(
+        email: email,
+        password: senha,
+      );
+      if (cred.user != null) {
+        await _firestore.collection('usuarios').doc(cred.user!.uid).set({
+          'xp': 0,
+          'nivel': 1,
+          'medalhas': FieldValue.arrayUnion(['novato']),
+        }, SetOptions(merge: true));
 
-    if (resultado.contains("Usuário registrado")) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('🎉 Parabéns! Você ganhou a medalha: Novato!'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Usuário cadastrado com sucesso!')),
+        SnackBar(content: Text('Usuario cadastrado com sucesso!')),
       );
       Navigator.pushReplacementNamed(context, '/auth');
-    } else {
+      return cred.user;
+    } catch (e) {
+      print("Erro ao registrar: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(resultado)),
+        SnackBar(content: Text("Erro ao cadastrar usuário")),
       );
+      return null;
     }
   }
 
@@ -92,5 +122,12 @@ class LoginController {
         SnackBar(content: Text(resultado)),
       );
     }
+  }
+
+  Stream<DocumentSnapshot> dadosGamificacaoUsuarioStream(String userId) {
+    return FirebaseFirestore.instance
+        .collection("usuarios")
+        .doc(userId)
+        .snapshots();
   }
 }

@@ -15,6 +15,10 @@ class HabitController {
       String categoria,
       int progresso,
       String? userId) async {
+    final habitos = await FirebaseFirestore.instance
+        .collection('habitos')
+        .where('usuarioId', isEqualTo: userId)
+        .get();
     try {
       await FirebaseFirestore.instance.collection('habitos').add({
         'nome': nome,
@@ -25,6 +29,22 @@ class HabitController {
         'progresso': progresso,
         'usuarioID': userId,
       });
+      if (habitos.docs.isEmpty) {
+        await FirebaseFirestore.instance
+            .collection('usuarios')
+            .doc(userId)
+            .update({
+          'medalhas': FieldValue.arrayUnion(['comecando_com_o_pe_direito'])
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                '🎉 Parabéns! Você ganhou a medalha: Crie seu primeiro hábito!'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Hábito cadastrado com sucesso.')),
       );
@@ -106,12 +126,13 @@ class HabitController {
         );
         return;
       }
+
       final data = habitoDoc.data()!;
       final int progressoAtual = data['progresso'] ?? 0;
       final String frequencia = data['frequencia']?.toLowerCase() ?? 'semanal';
+      final String usuarioID = data['usuarioID'];
 
       int maximoProgresso;
-
       switch (frequencia) {
         case 'diário':
           maximoProgresso = 1;
@@ -128,19 +149,54 @@ class HabitController {
 
       if (progressoAtual >= maximoProgresso) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Você já completou o progresso para este período!'),
           ),
         );
         return;
       }
 
+      final int novoProgresso = progressoAtual + 1;
       await _firestore.collection('habitos').doc(habitoId).update({
-        'progresso': progressoAtual + 1,
+        'progresso': novoProgresso,
       });
 
+      await _firestore.collection('usuarios').doc(usuarioID).update({
+        'xp': FieldValue.increment(20),
+      });
+
+      if (novoProgresso >= maximoProgresso) {
+        await _firestore.collection('habitos').doc(habitoId).update({
+          'concluido': true,
+        });
+
+        await _firestore.collection('usuarios').doc(usuarioID).update({
+          'xp': FieldValue.increment(40),
+        });
+
+        final habitosConcluidos = await _firestore
+            .collection('habitos')
+            .where('usuarioID', isEqualTo: usuarioID)
+            .where('concluido', isEqualTo: true)
+            .get();
+
+        if (habitosConcluidos.docs.length == 1) {
+          await _firestore.collection('usuarios').doc(usuarioID).update({
+            'medalhas': FieldValue.arrayUnion(['primeiro_habito_concluido'])
+          });
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                  '🎉 Parabéns! Você ganhou a medalha: Primeiro Hábito Concluído!'),
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Progresso atualizado com sucesso!')),
+        const SnackBar(content: Text('Progresso atualizado com sucesso!')),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habitoapp/auth/authFirebase.dart';
-import 'package:habitoapp/controllers/loginController.dart';
+import 'package:habitoapp/controllers/usuarioController.dart';
 import 'package:habitoapp/views/autenticacaoUser.dart';
 import 'package:habitoapp/widgets/custom_button.dart';
 import 'package:habitoapp/widgets/custom_textfield.dart';
@@ -39,7 +39,8 @@ class _RecuperarSenhaUserState extends State<RecuparSenhaUser>
   @override
   Widget build(BuildContext context) {
     var usuarioController = TextEditingController();
-    final LoginController _controller = LoginController(AutenticacaoFirebase());
+    final UsuarioController _controller =
+        UsuarioController(AutenticacaoFirebase());
 
     final Color primaryColor = Color(0xFFFF6B6B);
     final Color backgroundColor = Color(0xFFFDF6F0);

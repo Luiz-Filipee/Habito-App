@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:habitoapp/auth/authFirebase.dart';
 import 'package:habitoapp/controllers/habitoController.dart';
-import 'package:habitoapp/controllers/loginController.dart';
+import 'package:habitoapp/controllers/usuarioController.dart';
 import 'package:habitoapp/widgets/custom_button.dart';
 import 'package:habitoapp/widgets/custom_textfield.dart';
 
@@ -16,7 +16,7 @@ class _NovoHabitoPageState extends State<NovoHabitoPage> {
   final TextEditingController _nomeController = TextEditingController();
   final TextEditingController _lembreteController = TextEditingController();
   final _controller = HabitController();
-  final _controllerUser = LoginController(AutenticacaoFirebase());
+  final _controllerUser = UsuarioController(AutenticacaoFirebase());
 
   String _frequencia = 'Diário';
   String _categoria = 'Corrida';

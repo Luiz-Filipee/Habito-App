@@ -4,7 +4,9 @@ import 'package:habitoapp/firebase_options.dart';
 import 'package:habitoapp/views/autenticacaoUser.dart';
 import 'package:habitoapp/views/cadastroHabito.dart';
 import 'package:habitoapp/views/cadastroUser.dart';
+import 'package:habitoapp/views/gamificacaoUser.dart';
 import 'package:habitoapp/views/listaHabitos.dart';
+import 'package:habitoapp/views/metasUserHabito.dart';
 import 'package:habitoapp/views/recuparSenhaUser.dart';
 
 Future<void> main() async {
@@ -29,7 +31,9 @@ class MyApp extends StatelessWidget {
         '/cadastro-user': (context) => CadastroUser(),
         '/recuper-senha-user': (context) => RecuparSenhaUser(),
         '/lista-habitos': (context) => ListaHabitos(),
-        '/cadastro-habito': (context) => NovoHabitoPage()
+        '/cadastro-habito': (context) => NovoHabitoPage(),
+        '/metas': (context) => MetasUserHabitos(),
+        '/gamificacao': (context) => GamificacaoUser()
       },
     );
   }

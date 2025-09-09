@@ -1,6 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:habitoapp/auth/authFirebase.dart';
-import 'package:habitoapp/controllers/loginController.dart';
+import 'package:habitoapp/controllers/usuarioController.dart';
 import 'package:habitoapp/views/autenticacaoUser.dart';
 import 'package:habitoapp/widgets/custom_button.dart';
 import 'package:habitoapp/widgets/custom_textfield.dart';
@@ -12,7 +13,8 @@ class CadastroUser extends StatelessWidget {
     var usuarioControllerConfirm = TextEditingController();
     var senhaController = TextEditingController();
     var senhaControllerConfirm = TextEditingController();
-    final LoginController _controller = LoginController(AutenticacaoFirebase());
+    final UsuarioController _controller =
+        UsuarioController(AutenticacaoFirebase());
     final Color primaryColor = Color(0xFFFF6B6B);
 
     return Scaffold(
@@ -109,10 +111,22 @@ class CadastroUser extends StatelessWidget {
                                   usuarioControllerConfirm.text &&
                               senhaController.text ==
                                   senhaControllerConfirm.text) {
-                            await _controller.registarUsuario(
+                            final user = await _controller.registarUsuario(
                                 usuarioController.text,
                                 senhaController.text,
                                 context);
+
+                            if (user != null) {
+                              FirebaseFirestore.instance
+                                  .collection("usuarios")
+                                  .doc(user.uid)
+                                  .set({
+                                "email": usuarioController.text,
+                                "xp": 0,
+                                "nivel": 1,
+                                "medalhas": []
+                              });
+                            }
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
