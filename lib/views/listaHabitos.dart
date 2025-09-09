@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:habitoapp/auth/authFirebase.dart';
 import 'package:habitoapp/controllers/habitoController.dart';
-import 'package:habitoapp/controllers/loginController.dart';
+import 'package:habitoapp/controllers/usuarioController.dart';
 import 'package:habitoapp/widgets/cardHabito.dart';
 
 class ListaHabitos extends StatefulWidget {
@@ -11,8 +11,8 @@ class ListaHabitos extends StatefulWidget {
 
 class _ListaHabitosState extends State<ListaHabitos> {
   final HabitController _habitController = HabitController();
-  final LoginController _loginController =
-      LoginController(AutenticacaoFirebase());
+  final UsuarioController _usuarioController =
+      UsuarioController(AutenticacaoFirebase());
   int _paginaAtual = 0;
 
   final Color activeColor = Color(0xFFFF6B6B);
@@ -54,7 +54,7 @@ class _ListaHabitosState extends State<ListaHabitos> {
           IconButton(
             tooltip: 'Sair',
             icon: Icon(Icons.logout, color: Colors.white),
-            onPressed: () => _loginController.logout(context),
+            onPressed: () => _usuarioController.logout(context),
           ),
         ],
       ),
