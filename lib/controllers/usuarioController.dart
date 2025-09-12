@@ -41,7 +41,7 @@ class UsuarioController {
       await docRef.set({
         'xp': 0,
         'nivel': 1,
-        'medalhas': [],
+        'medalhas': ['novato'],
       });
     } else {
       return null;
@@ -56,11 +56,21 @@ class UsuarioController {
         password: senha,
       );
       if (cred.user != null) {
-        await _firestore.collection('usuarios').doc(cred.user!.uid).set({
+        await FirebaseFirestore.instance
+            .collection('usuarios')
+            .doc(cred.user!.uid)
+            .set({
           'xp': 0,
           'nivel': 1,
+          'medalhas': [],
+        });
+
+        await FirebaseFirestore.instance
+            .collection('usuarios')
+            .doc(cred.user!.uid)
+            .update({
           'medalhas': FieldValue.arrayUnion(['novato']),
-        }, SetOptions(merge: true));
+        });
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
