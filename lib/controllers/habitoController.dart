@@ -195,6 +195,23 @@ class HabitController {
         }
       }
 
+      final usuarioDoc =
+          await _firestore.collection('usuarios').doc(usuarioID).get();
+      final int xpAtual = usuarioDoc['xp'] ?? 0;
+      final int nivelAtual = usuarioDoc['nivel'] ?? 1;
+
+      final int novoNivel = (xpAtual ~/ 100) + 1;
+
+      if (novoNivel > nivelAtual) {
+        await _firestore.collection('usuarios').doc(usuarioID).update({
+          'nivel': novoNivel,
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text('Parabéns! Você subiu para o nível $novoNivel!')),
+        );
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Progresso atualizado com sucesso!')),
       );
