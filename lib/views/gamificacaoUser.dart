@@ -214,58 +214,6 @@ class _GamificacaoUserState extends State<GamificacaoUser> {
                 },
               ),
       ),
-      bottomNavigationBar: Container(
-        height: 85,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(24),
-            topRight: Radius.circular(24),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 12,
-              offset: Offset(0, -3),
-            )
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.only(top: 18, bottom: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              IconButton(
-                icon: Icon(
-                  Icons.home_filled,
-                  size: 32,
-                  color: _paginaAtual == 0 ? activeColor : inactiveColor,
-                ),
-                onPressed: () => _navegar(0),
-                tooltip: 'Início',
-              ),
-              IconButton(
-                icon: Icon(
-                  Icons.check_circle,
-                  size: 32,
-                  color: _paginaAtual == 1 ? activeColor : inactiveColor,
-                ),
-                onPressed: () => _navegar(1),
-                tooltip: 'Metas',
-              ),
-              IconButton(
-                icon: Icon(
-                  Icons.settings,
-                  size: 32,
-                  color: _paginaAtual == 2 ? activeColor : inactiveColor,
-                ),
-                onPressed: () => _navegar(2),
-                tooltip: 'Configurações',
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

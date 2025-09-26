@@ -11,20 +11,21 @@ class CardHabito extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
   final VoidCallback? onIncrement;
+  final VoidCallback? onRemove;
 
-  const CardHabito({
-    super.key,
-    required this.habitoId,
-    required this.nome,
-    required this.progresso,
-    required this.lembrete,
-    required this.frequencia,
-    required this.categoria,
-    required this.color,
-    this.onTap,
-    this.onLongPress,
-    this.onIncrement,
-  });
+  const CardHabito(
+      {super.key,
+      required this.habitoId,
+      required this.nome,
+      required this.progresso,
+      required this.lembrete,
+      required this.frequencia,
+      required this.categoria,
+      required this.color,
+      this.onTap,
+      this.onLongPress,
+      this.onIncrement,
+      this.onRemove});
 
   IconData getCategoriaIcon(String categoria) {
     switch (categoria.toLowerCase()) {
@@ -112,6 +113,13 @@ class CardHabito extends StatelessWidget {
                   tooltip: 'Adicionar progresso',
                   iconSize: 30,
                   color: progressColor,
+                ),
+                IconButton(
+                  onPressed: onRemove,
+                  icon: const Icon(Icons.delete_outline),
+                  tooltip: 'Remover hábito',
+                  iconSize: 30,
+                  color: Colors.red,
                 ),
               ],
             ),

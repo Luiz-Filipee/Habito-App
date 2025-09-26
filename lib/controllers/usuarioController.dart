@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:habitoapp/auth/authFirebase.dart';
 
@@ -32,7 +33,7 @@ class UsuarioController {
     }
   }
 
-  Future<void> criarUsuarioSeNaoExistir(String userId) async {
+  Future<void> criarUsuarioSeNaoExistir(String userId, String email) async {
     final docRef = _firestore.collection('usuarios').doc(userId);
 
     final snapshot = await docRef.get();
@@ -42,6 +43,9 @@ class UsuarioController {
         'xp': 0,
         'nivel': 1,
         'medalhas': ['novato'],
+        'amigos': [],
+        'pedidosAmizade': [],
+        'email': email,
       });
     } else {
       return null;
@@ -49,7 +53,7 @@ class UsuarioController {
   }
 
   Future<User?> registarUsuario(
-      String email, String senha, BuildContext context) async {
+      String email, String senha, String nome, BuildContext context) async {
     try {
       UserCredential cred = await _authUser.createUserWithEmailAndPassword(
         email: email,
@@ -62,7 +66,11 @@ class UsuarioController {
             .set({
           'xp': 0,
           'nivel': 1,
-          'medalhas': [],
+          'medalhas': ['novato'],
+          'amigos': [],
+          'pedidosAmizade': [],
+          'email': email,
+          'nome': nome,
         });
 
         await FirebaseFirestore.instance
@@ -109,6 +117,15 @@ class UsuarioController {
     return _authUser.currentUser?.uid;
   }
 
+  Future<Map<String, dynamic>?> getInfoUser(BuildContext context) async {
+    String? idUser = await getUserSession(context);
+    if (idUser == null) return null;
+
+    final doc = await _firestore.collection('usuarios').doc(idUser).get();
+
+    return doc.data();
+  }
+
   Future<void> verificarUsuarioLogado(BuildContext context) async {
     bool isLoggedIn = await _auth.isUserLoggedIn();
 
@@ -119,14 +136,32 @@ class UsuarioController {
     }
   }
 
+  Future<void> alteraNome(BuildContext context, String novoNome) async {
+    try {
+      final uid = await this.getUserSession(context);
+      if (uid == null) throw Exception("Usuário não logado");
+
+      await FirebaseFirestore.instance
+          .collection('usuarios')
+          .doc(uid)
+          .update({'nome': novoNome});
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Nome alterado com sucesso!')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao alterar nome: $e')),
+      );
+    }
+  }
+
   Future<void> recuparSenha(BuildContext context, String email) async {
     String resultado = await _auth.sendPasswordResetEmail(email);
-    print(resultado);
     if (resultado.contains("E-mail de redefinição enviado com sucesso")) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Email enviado para $email')),
       );
-      Navigator.pushReplacementNamed(context, '/auth');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(resultado)),
@@ -139,5 +174,26 @@ class UsuarioController {
         .collection("usuarios")
         .doc(userId)
         .snapshots();
+  }
+
+  Future<void> compartilharProgresso(String mensagem) async {
+    final currentUser = _authUser.currentUser;
+    if (currentUser == null) return;
+
+    final userDoc =
+        await _firestore.collection('usuarios').doc(currentUser.uid).get();
+    final amigos = List<String>.from(userDoc['amigos'] ?? []);
+
+    for (var amigoId in amigos) {
+      await _firestore
+          .collection('usuarios')
+          .doc(amigoId)
+          .collection('progressoRecebido')
+          .add({
+        'de': currentUser.uid,
+        'mensagem': mensagem,
+        'data': FieldValue.serverTimestamp(),
+      });
+    }
   }
 }

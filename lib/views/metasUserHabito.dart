@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:habitoapp/auth/authFirebase.dart';
 import 'package:habitoapp/controllers/habitoController.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:habitoapp/controllers/usuarioController.dart';
 
 class MetasUserHabitos extends StatefulWidget {
   const MetasUserHabitos({super.key});
@@ -11,6 +14,8 @@ class MetasUserHabitos extends StatefulWidget {
 
 class _MetasUserHabitosState extends State<MetasUserHabitos> {
   final HabitController _habitController = HabitController();
+  final UsuarioController _usuarioController =
+      UsuarioController(AutenticacaoFirebase());
   int _paginaAtual = 1;
 
   final Color activeColor = const Color(0xFFFF6B6B);
@@ -26,7 +31,11 @@ class _MetasUserHabitosState extends State<MetasUserHabitos> {
     } else if (index == 1) {
       Navigator.pushReplacementNamed(context, '/metas');
     } else if (index == 2) {
-      Navigator.pushReplacementNamed(context, '/config');
+      Navigator.pushNamed(context, '/config');
+    } else if (index == 3) {
+      Navigator.pushReplacementNamed(context, '/amigos');
+    } else if (index == 4) {
+      _usuarioController.logout(context);
     }
   }
 
@@ -209,13 +218,24 @@ class _MetasUserHabitosState extends State<MetasUserHabitos> {
         ),
       ),
       bottomNavigationBar: _bottomBar(),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: SpeedDial(
+        icon: Icons.add_chart,
         backgroundColor: activeColor,
         foregroundColor: Colors.white,
-        child: const Icon(Icons.auto_graph_sharp, size: 30),
-        onPressed: () {
-          Navigator.pushNamed(context, '/gamificacao');
-        },
+        children: [
+          SpeedDialChild(
+            child: Icon(Icons.auto_graph_sharp, color: Colors.white),
+            backgroundColor: activeColor,
+            label: 'Gamificação',
+            onTap: () => Navigator.pushNamed(context, '/gamificacao'),
+          ),
+          SpeedDialChild(
+            child: Icon(Icons.bar_chart, color: Colors.white),
+            backgroundColor: activeColor,
+            label: 'Estatísticas',
+            onTap: () => Navigator.pushNamed(context, '/estatisticas'),
+          ),
+        ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
@@ -245,15 +265,6 @@ class _MetasUserHabitosState extends State<MetasUserHabitos> {
           children: [
             IconButton(
               icon: Icon(
-                Icons.home_filled,
-                size: 32,
-                color: _paginaAtual == 0 ? activeColor : inactiveColor,
-              ),
-              onPressed: () => _navegar(0),
-              tooltip: 'Início',
-            ),
-            IconButton(
-              icon: Icon(
                 Icons.check_circle,
                 size: 32,
                 color: _paginaAtual == 1 ? activeColor : inactiveColor,
@@ -263,12 +274,39 @@ class _MetasUserHabitosState extends State<MetasUserHabitos> {
             ),
             IconButton(
               icon: Icon(
+                Icons.people_alt,
+                size: 32,
+                color: _paginaAtual == 3 ? activeColor : inactiveColor,
+              ),
+              onPressed: () => _navegar(3),
+              tooltip: 'Amigos',
+            ),
+            IconButton(
+              icon: Icon(
+                Icons.home_filled,
+                size: 32,
+                color: _paginaAtual == 0 ? activeColor : inactiveColor,
+              ),
+              onPressed: () => _navegar(0),
+              tooltip: 'Início',
+            ),
+            IconButton(
+              icon: Icon(
                 Icons.settings,
                 size: 32,
                 color: _paginaAtual == 2 ? activeColor : inactiveColor,
               ),
               onPressed: () => _navegar(2),
               tooltip: 'Configurações',
+            ),
+            IconButton(
+              icon: Icon(
+                Icons.logout,
+                size: 32,
+                color: _paginaAtual == 4 ? activeColor : inactiveColor,
+              ),
+              onPressed: () => _usuarioController.logout(context),
+              tooltip: 'Sair',
             ),
           ],
         ),

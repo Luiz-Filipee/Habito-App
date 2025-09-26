@@ -1,4 +1,3 @@
-// habits_bottom_nav.dart
 import 'package:flutter/material.dart';
 
 class ButtonNavHabito extends StatelessWidget {
@@ -18,6 +17,7 @@ class ButtonNavHabito extends StatelessWidget {
           Icon(Icons.home_outlined, size: 28),
           Icon(Icons.check_circle_outline, size: 28),
           Icon(Icons.settings_outlined, size: 28),
+          Icon(Icons.people_alt, size: 28),
         ],
       ),
     );
