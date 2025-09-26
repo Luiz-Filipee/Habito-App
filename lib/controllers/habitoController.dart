@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:habitoapp/services/notificacao_service.dart';
 
 class HabitController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final notificaoService = NotificacaoService();
 
   Future<void> cadastrarHabitoTeste(
       BuildContext context,
@@ -20,7 +22,8 @@ class HabitController {
         .where('usuarioId', isEqualTo: userId)
         .get();
     try {
-      await FirebaseFirestore.instance.collection('habitos').add({
+      DocumentReference docRef =
+          await FirebaseFirestore.instance.collection('habitos').add({
         'nome': nome,
         'lembrete': lembrete,
         'cor': cor,
@@ -29,6 +32,8 @@ class HabitController {
         'progresso': progresso,
         'usuarioID': userId,
       });
+      await NotificacaoService.agendarNotificacaoHabito(
+          id: docRef.hashCode, nomeHabito: nome, lembrete: lembrete);
       if (habitos.docs.isEmpty) {
         await FirebaseFirestore.instance
             .collection('usuarios')

@@ -29,7 +29,11 @@ class _ListaHabitosState extends State<ListaHabitos> {
     } else if (index == 1) {
       Navigator.pushReplacementNamed(context, '/metas');
     } else if (index == 2) {
-      Navigator.pushReplacementNamed(context, '/config');
+      Navigator.pushNamed(context, '/config');
+    } else if (index == 3) {
+      Navigator.pushReplacementNamed(context, '/amigos');
+    } else if (index == 4) {
+      _usuarioController.logout(context);
     }
   }
 
@@ -50,13 +54,6 @@ class _ListaHabitosState extends State<ListaHabitos> {
             letterSpacing: 1.2,
           ),
         ),
-        actions: [
-          IconButton(
-            tooltip: 'Sair',
-            icon: Icon(Icons.logout, color: Colors.white),
-            onPressed: () => _usuarioController.logout(context),
-          ),
-        ],
       ),
       body: SafeArea(
         child: Padding(
@@ -152,6 +149,9 @@ class _ListaHabitosState extends State<ListaHabitos> {
                             await _habitController.incrementarProgresso(
                                 context, habitoId);
                           },
+                          onRemove: () async {
+                            _confirmarRemoverHabito(context, habitoId);
+                          },
                         );
                       },
                     );
@@ -185,15 +185,6 @@ class _ListaHabitosState extends State<ListaHabitos> {
             children: [
               IconButton(
                 icon: Icon(
-                  Icons.home_filled,
-                  size: 32,
-                  color: _paginaAtual == 0 ? activeColor : inactiveColor,
-                ),
-                onPressed: () => _navegar(0),
-                tooltip: 'Início',
-              ),
-              IconButton(
-                icon: Icon(
                   Icons.check_circle,
                   size: 32,
                   color: _paginaAtual == 1 ? activeColor : inactiveColor,
@@ -203,12 +194,39 @@ class _ListaHabitosState extends State<ListaHabitos> {
               ),
               IconButton(
                 icon: Icon(
+                  Icons.people_alt,
+                  size: 32,
+                  color: _paginaAtual == 3 ? activeColor : inactiveColor,
+                ),
+                onPressed: () => _navegar(3),
+                tooltip: 'Amigos',
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.home_filled,
+                  size: 32,
+                  color: _paginaAtual == 0 ? activeColor : inactiveColor,
+                ),
+                onPressed: () => _navegar(0),
+                tooltip: 'Início',
+              ),
+              IconButton(
+                icon: Icon(
                   Icons.settings,
                   size: 32,
                   color: _paginaAtual == 2 ? activeColor : inactiveColor,
                 ),
                 onPressed: () => _navegar(2),
                 tooltip: 'Configurações',
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.logout,
+                  size: 32,
+                  color: _paginaAtual == 4 ? activeColor : inactiveColor,
+                ),
+                onPressed: () => _usuarioController.logout(context),
+                tooltip: 'Sair',
               ),
             ],
           ),
@@ -223,6 +241,31 @@ class _ListaHabitosState extends State<ListaHabitos> {
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+    );
+  }
+
+  void _confirmarRemoverHabito(BuildContext context, String habitoId) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Remover Hábito"),
+        content: Text("Tem certeza que deseja remover este hábito?"),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancelar")),
+          TextButton(
+              onPressed: () {
+                _habitController.deletarHabito(context, habitoId);
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Hábito removido com sucesso!")),
+                );
+              },
+              child:
+                  const Text("Remover", style: TextStyle(color: Colors.red))),
+        ],
+      ),
     );
   }
 }

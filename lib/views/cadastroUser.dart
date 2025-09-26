@@ -9,6 +9,7 @@ import 'package:habitoapp/widgets/custom_textfield.dart';
 class CadastroUser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    var nomeController = TextEditingController();
     var usuarioController = TextEditingController();
     var usuarioControllerConfirm = TextEditingController();
     var senhaController = TextEditingController();
@@ -25,7 +26,7 @@ class CadastroUser extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 80),
+                const SizedBox(height: 50),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -45,7 +46,7 @@ class CadastroUser extends StatelessWidget {
                     )
                   ],
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 8),
                 Container(
                   padding: const EdgeInsets.all(25),
                   decoration: BoxDecoration(
@@ -67,6 +68,13 @@ class CadastroUser extends StatelessWidget {
                           style: TextStyle(
                               fontSize: 36, fontWeight: FontWeight.bold),
                         ),
+                      ),
+                      const SizedBox(height: 20),
+                      CustomTextField(
+                        controller: nomeController,
+                        hintText: 'Nome',
+                        icon: Icons.person,
+                        obscureText: false,
                       ),
                       const SizedBox(height: 20),
                       CustomTextField(
@@ -114,6 +122,7 @@ class CadastroUser extends StatelessWidget {
                             final user = await _controller.registarUsuario(
                                 usuarioController.text,
                                 senhaController.text,
+                                nomeController.text,
                                 context);
 
                             if (user != null) {
@@ -122,9 +131,13 @@ class CadastroUser extends StatelessWidget {
                                   .doc(user.uid)
                                   .set({
                                 "email": usuarioController.text,
+                                "nome": nomeController.text,
                                 "xp": 0,
                                 "nivel": 1,
-                                "medalhas": []
+                                "medalhas": [],
+                                'amigos': [],
+                                'pedidosAmizade': [],
+                                'progressoRecebido': {}
                               });
                             }
                           } else {
